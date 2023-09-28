@@ -1,41 +1,58 @@
 <template>
-    <main class='game-view tictac-main'>
-        <div v-for='(vector, i) in matrix' 
-        :key='vector'
-        class='tictac-row'>
-            <TicTacToe v-for='(elem, j) in vector' 
-            :key='elem' 
-            :myx='i' 
-            :myy='j'
-            :blocked='blocked_matrix[i][j]' 
-            class='tictac-element' style="background-color:none"
-            @update_matrix='(data) => update_matrix(data, i, j)'>
-            </TicTacToe>
+    <main v-if="game_data_received" >
+        <div class='game-view tictac-main'>
+          <div v-for='(vector, i) in matrix' 
+            :key='vector'
+            class='tictac-row'>
+              <TicTacToe v-for='(elem, j) in vector' 
+                :key='elem' 
+                :myx='i' 
+                :myy='j'
+                :game_data='game_data'
+                class='tictac-element' style="background-color:none"
+                @update_matrix='(data) => update_matrix(data, i, j)'>
+              </TicTacToe>
+          </div>
         </div>
+        <h1>Vez do {{show_value(game_data.player)}}</h1>
     </main>
 </template>
 
 <script setup>
-  import { reactive, ref} from 'vue'
-import TicTacToe from '../components/TicTacToe.vue'
-  let matrix = [
+  import { start_game } from '@/services/services';
+  import { onMounted, reactive, ref} from 'vue'
+  import TicTacToe from '../components/TicTacToe.vue'
+  const props = defineProps(['player1', 'player2'])
+  const matrix = ref([
             [0,0,0],
             [0,0,0],
             [0,0,0]
-        ]
-  const blocked_matrix = ref([
-      [false, false, false],
-      [false, false, false],
-      [false, false, false]
-  ])
+        ])
+  const game_data_received = ref(false)
+  const game_data = reactive({})
   const update_matrix = (data, i, j) => {
       console.log(data)
-      matrix = data.game_matrix
-      blocked_matrix.value = data.blocked_matrix
-      
-      console.log(i)
-      console.log(j)
+      matrix.value = data.main_matrix
+      game_data.blocked_matrix = data.blocked_matrix
+      game_data.full_matrix =data.game_matrix
+      game_data.main_matrix =data.main_matrix
+      game_data.player = data.player
   }
+  const show_value = (v) => {
+    if(v == 2){
+        return 'O'
+    }else if(v == 1){
+        return 'X'
+    }else{
+        return ''
+    }
+}
+  onMounted(() => {
+    start_game().then((data) => {
+      update_matrix(data.data, 0, 0)
+      game_data_received.value = true
+    })
+  })
 </script>
 
 <style scoped>
@@ -47,4 +64,5 @@ import TicTacToe from '../components/TicTacToe.vue'
     max-width: 40rem;
     background-color:darkcyan;
   }
+
 </style>
