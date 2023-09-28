@@ -1,9 +1,80 @@
 <script setup>
-
+  import headerTitle from './components/headerTitle.vue';
 </script>
 
 <template>
-  <div style='display:flex; justify-content:center'>
+  <headerTitle/>
+  <section id="router" class="d-flex justify-content-center">
     <router-view></router-view>
-  </div>
+  </section>
 </template>
+
+<style>
+  #app {
+    min-height: 100vh;
+    background-color: var(--color-background-primary);
+    display: flex;
+    flex-flow: column;
+  }
+
+  #router {
+    margin: auto 0;
+  }
+
+  body.dark-mode {
+    
+    --color-background-primary: #0d1117;
+
+    --color-background-secondary: #161b22;
+
+    --color-background-terciary: #21262d;
+
+    --color-gray: #89929b;
+
+    --color-light-gray: #c6cdd5;
+
+    --color-white: #ecf2f8;
+
+    --color-red: #fa7970;
+
+    --color-orange: #faa356;
+  
+    --color-green: #7ce38b;
+  
+    --color-light-blue: #a2d2fb;
+  
+    --color-blue: #77bdfb;
+  
+    --color-purple: #cea5fb;
+
+  }
+
+  body {
+    
+    --color-background-primary: #ffffff;
+
+    --color-background-secondary: #9EA8B0;
+
+    --color-background-terciary: #EAEDF2;
+
+    --color-gray: #89929b;
+
+    --color-light-gray: #c6cdd5;
+
+    --color-white: #ecf2f8;
+
+    --color-red: #D34441;
+
+    --color-orange: #EC7933;
+  
+    --color-green: #43C94D;
+  
+    --color-light-blue: #6BC2D8;
+  
+    --color-blue: #527FF2;
+  
+    --color-purple: #7769BA;
+
+  }
+
+</style>

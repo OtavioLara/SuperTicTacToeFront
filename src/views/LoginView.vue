@@ -1,31 +1,85 @@
 <template>
-  <main>
-    <div>
+  <main class="d-flex">
+    <form
+    id="login-form"
+    class="d-flex flex-column p-3 align-self-center">
+
       <div class="form-floating mb-3">
-        <input type="email" @input="clear_mensages" class="form-control" id="floatingInput" placeholder="name@example.com" v-model="player.email">
+        <input
+          type="email"
+          @input="clear_mensages"
+          class="form-control"
+          id="floatingInput"
+          placeholder="name@example.com"
+          v-model="player.email">
+
         <label for="floatingInput">Email address</label>
       </div>
+
       <div class="form-floating mb-3">
-        <input type="password" @input="clear_mensages" class="form-control" id="floatingPassword" placeholder="Password" v-model="player.password">
+        <input
+        type="password"
+        @input="clear_mensages"
+        class="form-control"
+        id="floatingPassword"
+        placeholder="Password"
+        v-model="player.password">
+
         <label for="floatingPassword" >Password</label>
       </div>
+
       <div v-if="is_signingin" class="form-floating mb-3">
-        <input type="text" @input="clear_mensages" class="form-control" id="floatingNick" placeholder="Nick name" v-model="player.nick_name">
-        <label for="floatingNick" >Nick</label>
+        <input
+        type="text"
+        @input="clear_mensages"
+        class="form-control"
+        id="floatingNick"
+        placeholder="Nick name"
+        v-model="player.nick_name">
+
+        <label for="floatingNick" >Nickname</label>
       </div>
-      <div class="buttons">
-        <div v-if="error_menssage != ''" style="color: red">{{ error_menssage }}</div>
-        <div v-if="success_menssage != ''" style="color: green">{{ success_menssage }}</div>
+
+      <ul id="login-message" class="d-flex p-0 justify-content-center">
+        <li
+          v-if="error_menssage != ''"
+          style="color: var(--color-red)">
+          {{ error_menssage }}
+        </li>
+
+        <li
+          v-if="success_menssage != ''"
+          style="color: var(--color-green)">
+          {{ success_menssage }}
+        </li>
+      </ul>
+
+      <ul class="d-flex justify-content-around p-0">
+        <li v-if="!is_signingin" >
+          <button
+            :class="{'hide': is_signingin}"
+            @click="login_button"
+            type="submit"
+            class="btn btn-primary">
+            Login
+          </button>
+        </li>
+
+        <li>
+          <button
+            @click="signin_button"
+            type="submit"
+            class="btn"
+            :class="{'btn-secondary': !is_signingin, 'btn-primary': is_signingin}">
+            Sign in
+          </button>
+        </li>
+      </ul>
+
+      <div class="align-self-center">
+        <a id="back-to-login" v-if="is_signingin" @click="back_login" class="back-menu-link">Back to login</a>
       </div>
-      <div class="buttons">
-        <button v-if="!is_signingin" @click="login_button" class="btn btn-primary">Login</button>
-        <button @click="signin_button" class="btn" :class="{'btn-secondary': !is_signingin, 'btn-primary': is_signingin}">Sign in</button>
-      </div>
-      <div class="buttons">
-        <a v-if="is_signingin" @click="back_login" class="back-menu-link">Back to login</a>
-      </div>
-      
-    </div>
+    </form>
   </main>
 </template>
 
@@ -45,7 +99,9 @@
 
   const player_store = usePlayerStore()
 
-  const login_button = () => {
+  const login_button = (event) => {
+    event.preventDefault();
+
     login(player).then( response => {
       if(response.data.error){
         error_menssage.value = response.data.error
@@ -57,7 +113,11 @@
       }
     })
   }
-  const signin_button = () => {
+  
+
+  const signin_button = (event) => {
+    event.preventDefault();
+
     if(is_signingin.value){
       signin(player).then( response => {
         console.log(response.data)
@@ -80,11 +140,27 @@
 </script>
 
 <style scoped>
-.buttons{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-evenly;
+
+#back-to-login {
+  font-size: 0.75em;
 }
+body.dark-mode #back-to-login {
+  color: var(--color-light-blue);
+}
+
+#login-form {
+    background-color: var(--color-background-terciary);
+    border-radius: 1em;
+}
+
+li {
+    list-style: none;
+}
+
+#login-message {
+  height: 1.5em;
+}
+
 .back-menu-link{
   cursor: pointer;
 }
