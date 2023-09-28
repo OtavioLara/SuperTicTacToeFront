@@ -25,6 +25,8 @@
 
 <script setup>
 import { update_matrix } from '@/services/services';
+import { useGameStore } from '@/stores/game_store'
+import { storeToRefs } from 'pinia';
 const emit = defineEmits(['update_matrix'])
 const font_size = 30
 const props = defineProps(['myx', 'myy', 'game_data', 'main_matrix'])
@@ -33,7 +35,8 @@ const myy = props.myy
 const blocked = props.game_data.blocked_matrix[myx][myy]
 const matrix = props.game_data.full_matrix[myx][myy]
 const winner = props.game_data.main_matrix[myx][myy]
-
+const game_store = useGameStore()
+const { id } = storeToRefs(game_store)
 const show_value = (v) => {
     if(v == 1){
         return 'O'
@@ -47,7 +50,7 @@ const show_value = (v) => {
 function update_matrix_in(i, j, event) {
     if (event) {
         if(!blocked){
-            update_matrix(myx, myy, i, j).then(response => {
+            update_matrix(id, myx, myy, i, j).then(response => {
                 emit('update_matrix', response.data)
             })
         }

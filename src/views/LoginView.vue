@@ -33,7 +33,7 @@
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
   import { login, signin } from '@/services/services'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, computed } from 'vue'
   import { usePlayerStore } from '@/stores/user_store'
 
   const router = useRouter()
@@ -44,22 +44,19 @@
   const player = reactive({})
 
   const player_store = usePlayerStore()
-  const {email, nick_name} =  storeToRefs(player_store)
-  
+
   const login_button = () => {
     login(player).then( response => {
       if(response.data.error){
         error_menssage.value = response.data.error
       } else {
         console.log(player)
-        email.value = response.data.email
-        nick_name.value = response.data.nick_name
+        player_store.setEmail(response.data.email)
+        player_store.setNickName(response.data.nick_name)
         router.push({ name: 'lobby'})
       }
     })
   }
-  
-
   const signin_button = () => {
     if(is_signingin.value){
       signin(player).then( response => {

@@ -19,18 +19,19 @@
 </template>
 
 <script setup>
-  import { start_game } from '@/services/services';
+  import { useGameStore } from '@/stores/game_store'
+  import { storeToRefs } from 'pinia';
   import { onMounted, reactive, ref} from 'vue'
   import TicTacToe from '../components/TicTacToe.vue'
-  const props = defineProps(['player1', 'player2'])
   const matrix = ref([
             [0,0,0],
             [0,0,0],
             [0,0,0]
         ])
   const game_data_received = ref(false)
-  const game_data = reactive({})
-  const update_matrix = (data, i, j) => {
+  const game_store = useGameStore()
+  const { id, player1, player2, game_data } = storeToRefs(game_store)
+  const update_matrix = (id_game, data, i, j) => {
       console.log(data)
       matrix.value = data.main_matrix
       game_data.blocked_matrix = data.blocked_matrix
@@ -46,12 +47,9 @@
     }else{
         return ''
     }
-}
+  }
   onMounted(() => {
-    start_game().then((data) => {
-      update_matrix(data.data, 0, 0)
-      game_data_received.value = true
-    })
+    update_matrix()
   })
 </script>
 
