@@ -31,7 +31,7 @@
   const game_data_received = ref(false)
   const game_store = useGameStore()
   const { id, player1, player2, game_data } = storeToRefs(game_store)
-  const update_matrix = (id_game, data, i, j) => {
+  const update_matrix = (i, j) => {
       console.log(data)
       matrix.value = data.main_matrix
       game_data.blocked_matrix = data.blocked_matrix
