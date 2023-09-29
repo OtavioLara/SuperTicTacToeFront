@@ -47,6 +47,10 @@
   
     --color-purple: #cea5fb;
 
+    --color-text: #ecf2f8;
+
+    color: var(--color-text);
+
   }
 
   body {
@@ -69,12 +73,24 @@
   
     --color-green: #43C94D;
   
-    --color-light-blue: #6BC2D8;
+    --color-light-blue: rgb(107, 194, 216);
   
-    --color-blue: #527FF2;
+    --color-blue: rgb(82, 127, 242);
   
-    --color-purple: #7769BA;
+    --color-purple: rgb(119, 105, 186);
 
+    --color-text: #161b22;
+
+    color: var(--color-text);
+
+  }
+
+  .font-color-is-danger {
+    color: var(--color-red);
+  }
+
+  li {
+    list-style: none;
   }
 
 </style>
