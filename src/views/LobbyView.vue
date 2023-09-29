@@ -1,10 +1,19 @@
 <template>
-  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3">
+  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3 flex-md-row px-md-4 gap-md-0">
     <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2"
       v-if="!(my_lobby.value && my_lobby.value.players.length > 0)">
       <h3 class="title-color">Rooms</h3>
-      <ul class="p-0 m-0 flex-grow-1 d-flex flex-column align-items-center">
-        <li v-for="l in lobbies" :key="l" class="room p-0 m-0" @click="join_lobby_view(l.id)">
+      <ul class="room-list p-0 m-0 flex-grow-1 d-flex flex-column align-items-left gap-2">
+        <li v-for="l in lobbies" :key="l" class="room gap-2 align-items-baseline d-flex p-0 m-0" @click="join_lobby_view(l.id)"
+          :class="{'is-full': (l.players.length >= 2)}">
+          <fa 
+          v-if="l.players.length < 2"
+          class="empty-icon"
+          :icon="['fa', 'person']"/>
+          <fa 
+          v-if="l.players.length >=2"
+          class="full-icon"
+          :icon="['fa', 'person-circle-exclamation']"/>
           <h4 class="m-0 p-0">{{ l.players[0].nick_name }}'s room</h4>
         </li>
       </ul>
@@ -13,7 +22,7 @@
 
     <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2"
       v-if="my_lobby.value && my_lobby.value.players.length > 0" v-bind="my_lobby">
-      <h3 class="title-color">Room name</h3>
+      <h3 class="title-color">{{ my_lobby.value.players[0].nick_name }}'s room</h3>
       <ul id="player-list" class="p-0 m-0 flex-grow-1 d-flex flex-column align-items-center">
         <li v-for="player in my_lobby.value.players" :key="player">
           {{ player.nick_name }}
@@ -25,23 +34,26 @@
       <ul class="p-0 m-0 d-flex w-100 justify-content-between">
         <li><button class="py-1 px-3 d-flex align-items-center fw-medium rounded-5 btn-leave-room"
             @click="">
-            leaveROm
+            <fa :icon="['fas', 'right-from-bracket']" />
           </button></li>
 
-        <li><button class="py-1 px-3 d-flex align-items-center fw-medium rounded-5 btn-start"
+        <li><button class="p-0 d-flex flex-column align-items-center justify-content-center rounded-5 btn-start"
             :class="{ 'can-hover': (my_lobby.value.players.length >= 2) }" @click="start_game_view(my_lobby.value.id)">
-            Play
+            <fa :icon="['fas', 'play']"/>
           </button></li>
       </ul>
     </section>
-      <ul class="p-0 m-0 fs-2 d-flex flex-column w-75 gap-2" v-if="my_lobby.value && my_lobby.value.players.length > 0">
+    <section class="d-flex flex-column w-100">
+      <ul class="players-container p-0 m-0 fs-2 align-self-center d-flex flex-column w-75 align-self-md-end gap-2 px-md-3"
+      v-if="my_lobby.value && my_lobby.value.players.length > 0">
         <h3 class="title-color align-self-center">Online players</h3>
-        <li class="d-flex gap-2 online-player-item" v-for="p in all_players" :key="p" 
+        <li class="d-flex align-items-center gap-2 online-player-item" v-for="p in all_players" :key="p" 
         @click="ask_to_join(p)">
-          <icon class="m-0 p-0 border-0 rounded-5">invite</icon>
+          <span class="m-0 p-0 d-flex flex-column justify-content-center border-0 rounded-5 lh-1"><fa :icon="['fas', 'plus']"/></span>
           <p class="m-0 p-0">{{ p.nick_name }}</p>
         </li>
       </ul>
+    </section>
   </main>
 </template>
 
@@ -118,8 +130,29 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
+
+.empty-icon {
+  color: var(--color-green);
+}
+
+.is-full {
+  order: 2;
+}
+
+.full-icon ~ h4 {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.full-icon {
+  color: var(--color-orange);
+}
 .title-color {
   color: var(--color-blue);
+}
+
+.room-list {
+  overflow-y: scroll;
 }
 
 .room {
@@ -139,8 +172,10 @@ onBeforeMount(() => {
   color: var(--color-text);
 }
 
-.online-player-item icon {
-  font-size: 0.6em;
+.online-player-item span {
+  font-size: 0.8em;
+  width: 1.2em;
+  height: 1.2em;
   background-color: var(--color-purple);
   color: var(--color-white);
 }
@@ -165,7 +200,16 @@ onBeforeMount(() => {
 .btn-leave-room {
   background-color: var(--color-red);
   border: 1px solid var(--color-red);
+  color: var(--color-white);
   opacity: 0.8;
+  font-size: 1.7em;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.btn-leave-room svg {
+  position: relative;
+  left: -0.3em;
 }
 
 .btn-leave-room:hover {
@@ -173,19 +217,31 @@ onBeforeMount(() => {
 }
 
 .btn-start {
-  border: 1px solid var(--color-blue);
-  color: var(--color-background-primary);
+  position: relative;
+  border: 1px solid var(--color-green);
   background-color: var(--color-light-blue);
+  color: var(--color-white);
   opacity: 0.6;
+  font-size: 1.7em;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.btn-start svg {
+  position: absolute;
+  left: 30%;
 }
 
 .can-hover.btn-start {
-  background-color: var(--color-light-blue);
+  background-color: var(--color-green);
   opacity: 0.8;
 }
 
+.players-container {
+  overflow-x: hidden;
+}
+
 .can-hover:hover {
-  color: var(--color-background-terciary);
   opacity: 1;
 }
 
@@ -194,5 +250,13 @@ onBeforeMount(() => {
   border: 1px solid var(--color-purple);
   box-shadow: 5px 5px 100px rgba(162, 210, 251, 0.2);
   height: 45vh;
+}
+
+@media only screen and (min-width: 768px) {
+  .players-container {
+  max-height: 300px;
+  overflow-y: scroll;
+  box-shadow: inset 0 -2px 4px var(--color-text-translucid);
+}
 }
 </style>
