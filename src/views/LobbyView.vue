@@ -1,6 +1,6 @@
 <template>
-  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3 flex-md-row px-md-4 gap-md-0">
-    <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2"
+  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3 flex-md-row px-md-4 gap-md-0 justify-content-md-around justify-content-lg-center gap-lg-5">
+    <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2"
       v-if="!(my_lobby.value && my_lobby.value.players.length > 0)">
       <h3 class="title-color">Rooms</h3>
       <ul class="room-list p-0 m-0 flex-grow-1 d-flex flex-column align-items-left gap-2">
@@ -20,7 +20,7 @@
       <button class="py-1 px-2 d-flex align-items-center btn-create-room" @click="create_lobby_view">Create room</button>
     </section>
 
-    <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2"
+    <section class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2"
       v-if="my_lobby.value && my_lobby.value.players.length > 0" v-bind="my_lobby">
       <h3 class="title-color">{{ my_lobby.value.players[0].nick_name }}'s room</h3>
       <ul id="player-list" class="p-0 m-0 flex-grow-1 d-flex flex-column align-items-center">
@@ -43,8 +43,8 @@
           </button></li>
       </ul>
     </section>
-    <section class="d-flex flex-column w-100">
-      <ul class="players-container p-0 m-0 fs-2 align-self-center d-flex flex-column w-75 align-self-md-end gap-2 px-md-3"
+    <section class="d-flex flex-column w-100 w-auto">
+      <ul class="players-container max-w-400px p-0 m-0 fs-2 align-self-center d-flex flex-column w-75 align-self-md-end gap-2 px-md-3"
       v-if="my_lobby.value && my_lobby.value.players.length > 0">
         <h3 class="title-color align-self-center">Online players</h3>
         <li class="d-flex align-items-center gap-2 online-player-item" v-for="p in all_players" :key="p" 
@@ -133,6 +133,10 @@ onBeforeMount(() => {
 
 .empty-icon {
   color: var(--color-green);
+}
+
+.max-w-400px {
+  max-width: 400px;
 }
 
 .is-full {
@@ -238,6 +242,7 @@ onBeforeMount(() => {
 }
 
 .players-container {
+  min-width: 200px;
   overflow-x: hidden;
 }
 
@@ -257,6 +262,7 @@ onBeforeMount(() => {
   max-height: 300px;
   overflow-y: scroll;
   box-shadow: inset 0 -2px 4px var(--color-text-translucid);
+  min-width: 300px;
 }
 }
 </style>
