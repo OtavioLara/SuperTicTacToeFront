@@ -1,8 +1,7 @@
 <template>
   <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3 flex-md-row px-md-4 gap-md-0 justify-content-md-around justify-content-lg-center gap-lg-5">
     <!-- Show all lobbies -->
-    <section  v-if="!get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2"
-      v-if="!(my_lobby.value && my_lobby.value.players.length > 0)">
+    <section  v-if="!get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2">
       <h3 class="title-color">Rooms</h3>
       <ul class="room-list p-0 m-0 flex-grow-1 d-flex flex-column align-items-left gap-2">
         <li v-for="l in lobbies" :key="l" class="room gap-2 align-items-baseline d-flex p-0 m-0" @click="join_lobby(l)"
