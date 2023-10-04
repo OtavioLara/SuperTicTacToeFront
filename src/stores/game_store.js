@@ -1,11 +1,17 @@
 import { defineStore } from 'pinia'
-import { ref, computed, reactive } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useGameStore = defineStore('game', () => {
-    const id = ref('')
-    const player1 = reactive({})
-    const player2 = reactive({})
-    const game_data = reactive({})
+    const game = ref('')
     
-    return { id, player1, player2, game_data }
+    const getGameUid = computed(() => {
+        game.value = localStorage.getItem('game')
+        return game.value
+    })
+    const setGameUid = (value) => {
+        localStorage.setItem('game', value);
+        game.value = value
+    }
+    
+    return { getGameUid, setGameUid }
 })

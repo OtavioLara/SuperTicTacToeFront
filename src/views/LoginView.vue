@@ -84,11 +84,16 @@
 </template>
 
 <script setup>
-  import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
-  import { login, signin } from '@/services/services'
-  import { onMounted, reactive, ref, computed } from 'vue'
+  // import { login, signin } from '@/services/services'
+  import { reactive, ref } from 'vue'
   import { usePlayerStore } from '@/stores/user_store'
+  import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+  import { useDatabase, useFirebaseAuth, getCurrentUser } from 'vuefire'
+  import { set, ref as dbRef} from 'firebase/database'
+  
+  const auth = useFirebaseAuth();
+  const db = useDatabase()
 
   const router = useRouter()
   
@@ -101,32 +106,37 @@
 
   const login_button = (event) => {
     event.preventDefault();
-
-    login(player).then( response => {
-      if(response.data.error){
-        error_menssage.value = response.data.error
-      } else {
-        console.log(player)
-        player_store.setEmail(response.data.email)
-        player_store.setNickName(response.data.nick_name)
+    signInWithEmailAndPassword(auth, player.email, player.password)
+    .then((userCredential) => {
+        console.log(userCredential)
+        player_store.setUser(userCredential.user)
         router.push({ name: 'lobby'})
-      }
-    })
+    }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode)
+      console.log(error_menssage)
+      error_menssage.value = "Email or password incorrect"
+    });
   }
-  
 
   const signin_button = (event) => {
     event.preventDefault();
-
     if(is_signingin.value){
-      signin(player).then( response => {
-        console.log(response.data)
-        if(response.data.error){
-          error_menssage.value = response.data.error
-        }else{
-          success_menssage.value = 'User added'
-        }
-      })
+      createUserWithEmailAndPassword(auth, player.email, player.password)
+      .then((userCredential) => {
+        updateProfile(userCredential.user, {displayName: player.nick_name})
+        player_store.setUser(userCredential.user)
+        set(dbRef(db, "players/"+userCredential.user.uid), {
+          name: player.nick_name
+        })
+        router.push({ name: 'lobby'})
+      }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, error_menssage)
+        error_menssage.value = "user cant be created"
+      });
     }
     is_signingin.value = !is_signingin.value
   }
@@ -137,6 +147,7 @@
     success_menssage.value = ''
     error_menssage.value = ''
   }
+  
 </script>
 
 <style scoped>

@@ -11,7 +11,7 @@
                         :index='j'
                         :style="{ fontSize: font_size + 'px'}"
                         class='tictac-element' ref='test'
-                        @click='(event) => update_matrix_in(i, j, event)'
+                        @click='(event) => click_in_matrix(i, j, event)'
                     >
                         {{show_value(matrix[i][j])}}
                     </div>
@@ -27,16 +27,14 @@
 import { update_matrix } from '@/services/services';
 import { useGameStore } from '@/stores/game_store'
 import { storeToRefs } from 'pinia';
-const emit = defineEmits(['update_matrix'])
+const emit = defineEmits(['click_in_matrix'])
 const font_size = 30
-const props = defineProps(['myx', 'myy', 'game_data', 'main_matrix'])
-const myx = props.myx
-const myy = props.myy
-const blocked = props.game_data.blocked_matrix[myx][myy]
-const matrix = props.game_data.full_matrix[myx][myy]
-const winner = props.game_data.main_matrix[myx][myy]
-const game_store = useGameStore()
-const { id } = storeToRefs(game_store)
+const props = defineProps(['blocked', 'matrix', 'winner'])
+
+const blocked = props.blocked
+const matrix = props.matrix
+const winner = props.winner
+
 const show_value = (v) => {
     if(v == 1){
         return 'O'
@@ -47,12 +45,10 @@ const show_value = (v) => {
     }
 }
 
-function update_matrix_in(i, j, event) {
+function click_in_matrix(i, j, event) {
     if (event) {
-        if(!blocked){
-            update_matrix(id, myx, myy, i, j).then(response => {
-                emit('update_matrix', response.data)
-            })
+        if(!blocked && matrix[i][j] == 0){
+            emit('click_in_matrix', {'x_in': i, 'y_in': j})
         }
     }
   }
