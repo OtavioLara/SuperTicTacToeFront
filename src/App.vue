@@ -49,6 +49,8 @@
 
     --color-text: #ecf2f8;
 
+    --color-text-translucid: rgba(236, 242, 248, 0.2);
+
     color: var(--color-text);
 
   }
@@ -80,6 +82,8 @@
     --color-purple: rgb(119, 105, 186);
 
     --color-text: #161b22;
+
+    --color-text-translucid: rgba(22, 27, 34, 0.2);
 
     color: var(--color-text);
 

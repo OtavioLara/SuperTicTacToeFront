@@ -1,11 +1,20 @@
 <template>
-  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3">
-    
-    <!-- Show all lobbies -->  
-    <section v-if="!get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2">
+  <main class="p-0 m-0 min-vw-100 d-flex flex-column align-items-center gap-3 flex-md-row px-md-4 gap-md-0 justify-content-md-around justify-content-lg-center gap-lg-5">
+    <!-- Show all lobbies -->
+    <section  v-if="!get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2"
+      v-if="!(my_lobby.value && my_lobby.value.players.length > 0)">
       <h3 class="title-color">Rooms</h3>
-      <ul class="p-0 m-0 flex-grow-1 d-flex flex-column align-items-center">
-        <li v-for="l in lobbies" :key="l" class="room p-0 m-0" @click="join_lobby(l)">
+      <ul class="room-list p-0 m-0 flex-grow-1 d-flex flex-column align-items-left gap-2">
+        <li v-for="l in lobbies" :key="l" class="room gap-2 align-items-baseline d-flex p-0 m-0" @click="join_lobby(l)"
+        :class="{'is-full': (l.players.length >= 2)}">
+        <fa
+          v-if="l.players.length < 2"
+          class="empty-icon"
+          :icon="['fa', 'person']"/>
+          <fa
+          v-if="l.players.length >= 2"
+          class="full-icon"
+          :icon="['fa', 'person-circle-exclamation']"/>
           <h4 class="m-0 p-0">{{ l.players[0].name }}'s room</h4>
         </li>
       </ul>
@@ -13,8 +22,8 @@
     </section>
 
     <!-- Show your lobby -->
-    <section v-if="get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column p-2">
-      <h3 class="title-color"> {{get_my_lobby.players[0] && get_my_lobby.players[0].name}}'s Room</h3>
+    <section v-if="get_my_lobby" class="lobby_container w-75 rounded-4 align-items-center d-flex flex-column max-w-400px p-2">
+      <h3 class="title-color"> {{get_my_lobby.players[0] && get_my_lobby.players[0].name}}'s lobby</h3>
       <ul id="player-list" class="p-0 m-0 flex-grow-1 d-flex flex-column align-items-center">
         <li v-for="player in get_my_lobby.players" :key="player">
           {{ player.name + ' - ready: '+ player.ready }}
@@ -26,25 +35,28 @@
       </h5>
       <ul class="p-0 m-0 d-flex w-100 justify-content-between">
         <li><button class="py-1 px-3 d-flex align-items-center fw-medium rounded-5 btn-leave-room" @click="leave_lobby(get_my_lobby)">
-            leaveROm
+            <fa :icon="['fas', 'right-from-bracket']" />
           </button></li>
 
-        <li><button class="py-1 px-3 d-flex align-items-center fw-medium rounded-5 btn-start"
+        <li><button class="p-0 d-flex flex-column align-items-center justify-content-center rounded-5 btn-start"
             :class="{ 'can-hover': (get_my_lobby.players.length >= 2) }" @click="start_game()">
-            Play
+            <fa :icon="['fas', 'play']"/>
           </button></li>
       </ul>
-    </section >
+    </section>
 
     <!-- List all players that are not in your lobby -->
-    <ul v-if="get_my_lobby" class="p-0 m-0 fs-2 d-flex flex-column w-75 gap-2" >
-      <h3 class="title-color align-self-center">Online players</h3>
-      <li class="d-flex gap-2 online-player-item" v-for="p in get_all_players" :key="p" 
-      @click="ask_to_join(p)">
-        <i class="m-0 p-0 border-0 rounded-5">invite</i>
-        <p class="m-0 p-0">{{ p.name }}</p>
-      </li>
-    </ul>
+    <section class="d-flex flex-column w-100 w-auto">
+      <ul class="players-container max-w-400px p-0 m-0 fs-2 align-self-center d-flex flex-column w-75 align-self-md-end gap-2 px-md-3"
+      v-if="get_my_lobby" >
+        <h3 class="title-color align-self-center">Online players</h3>
+        <li class="d-flex align-items-center gap-2 online-player-item" v-for="p in get_all_players" :key="p"
+        @click="ask_to_join(p)">
+          <span class="m-0 p-0 d-flex flex-column justify-content-center border-0 rounded-5 lh-1"><fa :icon="['fas', 'plus']"/></span>
+          <p class="m-0 p-0">{{ p.name }}</p>
+        </li>
+      </ul>
+    </section>
     <div>
       <h4> invites </h4>
       <div v-for="n in get_my_invites" :key="n">
@@ -60,7 +72,7 @@
 <script setup>
 
   import { useRouter } from 'vue-router'
-  
+
   import { useGameStore } from '@/stores/game_store'
   import { onBeforeMount, computed, ref } from 'vue';
 
@@ -70,12 +82,12 @@
 
   const game_store = useGameStore()
   const db = useDatabase()
-    
+
   const cur_player = ref('')
 
   const players_ref = dbRef(db, 'players')
   const all_players = useDatabaseList(players_ref)
-  
+
   const lobby_ref = dbRef(db, 'lobby')
   const lobbies = useDatabaseList(lobby_ref)
 
@@ -103,7 +115,7 @@
       console.log('User already has a lobby')
     }
   }
-  
+
   function get_player_lobby(player_uid){
       return lobbies.value.find(l => l.players.find(p => p.uid == player_uid))
   }
@@ -128,7 +140,7 @@
       return
     }
     if(lobby.players.find(p => p.uid == cur_player.value.uid)){
-      console.log("You have already joined this lobby")    
+      console.log("You have already joined this lobby")
       return
     }
     update(dbRef(db, 'lobby/'+lobby.id+'/players/1'), {'uid': cur_player.value.uid, 'name': cur_player.value.displayName, 'ready': false})
@@ -147,11 +159,11 @@
     if(lobby.players.length == 1){
       remove(dbRef(db, 'lobby/'+lobby.id))
     }
-    if(lobby.players.length == 2){      
+    if(lobby.players.length == 2){
       set(dbRef(db, 'lobby/'+lobby.id+'/players'), lobby.players.filter(p => p.uid !== cur_player.value.uid))
     }
   }
-  
+
   const ask_to_join = (player) => {
     push(dbRef(db, 'invites'), {'from': cur_player.value.uid, 'to': player.id})
   }
@@ -176,8 +188,8 @@
     }
     const game_dict = {}
     game_dict['players'] = my_lobby.players
-    game_dict['game_matrix'] = [[[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]], 
-                                [[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]], 
+    game_dict['game_matrix'] = [[[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
+                                [[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
                                 [[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]]
     game_dict['main_matrix'] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     game_dict['turn'] = 0
@@ -188,10 +200,10 @@
     push(dbRef(db, 'game'), game_dict).then(response => {
       game_store.setGameUid(response.key)
       call_friend(response.key)
-      
+
       sleep(2000).then(() => { router.push({name: 'game'}) });
 
-      
+
     })
   }
   function call_friend(game_uid){
@@ -209,12 +221,37 @@
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  
+
 </script>
 
 <style scoped>
+
+.empty-icon {
+  color: var(--color-green);
+}
+
+.max-w-400px {
+  max-width: 400px;
+}
+
+.is-full {
+  order: 2;
+}
+
+.full-icon ~ h4 {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.full-icon {
+  color: var(--color-orange);
+}
 .title-color {
   color: var(--color-blue);
+}
+
+.room-list {
+  overflow-y: scroll;
 }
 
 .room {
@@ -234,8 +271,10 @@
   color: var(--color-text);
 }
 
-.online-player-item i {
-  font-size: 0.6em;
+.online-player-item span {
+  font-size: 0.8em;
+  width: 1.2em;
+  height: 1.2em;
   background-color: var(--color-purple);
   color: var(--color-white);
 }
@@ -260,7 +299,16 @@
 .btn-leave-room {
   background-color: var(--color-red);
   border: 1px solid var(--color-red);
+  color: var(--color-white);
   opacity: 0.8;
+  font-size: 1.7em;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.btn-leave-room svg {
+  position: relative;
+  left: -0.3em;
 }
 
 .btn-leave-room:hover {
@@ -268,19 +316,32 @@
 }
 
 .btn-start {
-  border: 1px solid var(--color-blue);
-  color: var(--color-background-primary);
+  position: relative;
+  border: 1px solid var(--color-green);
   background-color: var(--color-light-blue);
+  color: var(--color-white);
   opacity: 0.6;
+  font-size: 1.7em;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.btn-start svg {
+  position: absolute;
+  left: 30%;
 }
 
 .can-hover.btn-start {
-  background-color: var(--color-light-blue);
+  background-color: var(--color-green);
   opacity: 0.8;
 }
 
+.players-container {
+  min-width: 200px;
+  overflow-x: hidden;
+}
+
 .can-hover:hover {
-  color: var(--color-background-terciary);
   opacity: 1;
 }
 
@@ -289,5 +350,14 @@
   border: 1px solid var(--color-purple);
   box-shadow: 5px 5px 100px rgba(162, 210, 251, 0.2);
   height: 45vh;
+}
+
+@media only screen and (min-width: 768px) {
+  .players-container {
+  max-height: 300px;
+  overflow-y: scroll;
+  box-shadow: inset 0 -2px 4px var(--color-text-translucid);
+  min-width: 300px;
+}
 }
 </style>
