@@ -250,7 +250,7 @@
 }
 
 .room-list {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .room {
@@ -358,5 +358,24 @@
   box-shadow: inset 0 -2px 4px var(--color-text-translucid);
   min-width: 300px;
 }
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--color-light-blue);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>
