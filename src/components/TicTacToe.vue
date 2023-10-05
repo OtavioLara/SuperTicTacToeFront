@@ -24,9 +24,7 @@
 </template>
 
 <script setup>
-import { update_matrix } from '@/services/services';
-import { useGameStore } from '@/stores/game_store'
-import { storeToRefs } from 'pinia';
+
 const emit = defineEmits(['click_in_matrix'])
 const font_size = 30
 const props = defineProps(['blocked', 'matrix', 'winner'])
